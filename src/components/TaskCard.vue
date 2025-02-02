@@ -17,7 +17,6 @@ defineProps({
             <div class="card-body">
             <MarkdownRenderer :content="body" />
             <p class="text-danger">Лимит: {{ timeLimit }}</p>
-            <a href="#" class="btn btn-primary">Решить</a>
             </div>
         </div>
 

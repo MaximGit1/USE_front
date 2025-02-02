@@ -9,7 +9,7 @@ const tasks = ref([])
 // Функция загрузки задач с API
 const fetchTasks = async () => {
     try {
-        const response = await fetch('http://127.0.0.1:8000/tasks/base/?offset=0&limit=10')
+        const response = await fetch('https://127.0.0.1:8000/tasks/base/?offset=0&limit=10')
         const data = await response.json()
         
         // Приводим данные API к формату, который используется в TaskCard

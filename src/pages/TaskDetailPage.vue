@@ -20,7 +20,7 @@ onMounted(async () => {
         task.value = history.state
     } else {
         try {
-            const response = await fetch(`http://127.0.0.1:8000/tasks/base/${taskId}`)
+            const response = await fetch(`https://127.0.0.1:8000/tasks/base/${taskId}`)
             if (!response.ok) {
                 throw new Error("Ошибка загрузки данных")
             }
