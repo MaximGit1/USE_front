@@ -14,7 +14,6 @@ const checkAuth = async () => {
       {},
       { withCredentials: true }
     );
-    console.log("Ответ сервера:", response.data); // Лог для отладки
     if (response.data === true) {
       isAuthenticated.value = true; // Обновляем состояние, если ответ сервера - true
     } else {

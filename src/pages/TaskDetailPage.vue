@@ -48,10 +48,14 @@ onMounted(async () => {
                 :body="task.body"
                 :timeLimit="task.timeLimit"
             />
+            
+            <TaskEditor 
+                :showInfo="showInfo" 
+                :toggleInfo="toggleInfo"
+                :taskId="task.id"
+            />
         </div>
         <p v-else>Загрузка...</p>
-
-        <TaskEditor :showInfo="showInfo" :toggleInfo="toggleInfo" />
     </div>
     <div class="space"></div>
 </template>
