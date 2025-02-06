@@ -13,28 +13,57 @@ const toggleInfo = () => {
     showInfo.value = !showInfo.value
 }
 
-onMounted(async () => {
-    const taskId = route.params.taskId
+async function checkPermission() {
+    try {
+        const response = await fetch('https://127.0.0.1:8000/auth/verify-role/?role=admin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Добавьте заголовок авторизации если нужно:
+                // 'Authorization': `Bearer ${your_token}`
+            },
+            credentials: 'include' // Если используете куки
+        })
+        
+        if (!response.ok) throw new Error('Ошибка проверки прав')
+        const data = await response.json()
+        
+        return data
+    } catch (error) {
+        console.error('Ошибка:', error)
+        return false
+    }
+}
 
-    if (history.state && history.state.id) {
-        task.value = history.state
-    } else {
-        try {
+onMounted(async () => {
+    try {
+        // Проверка прав доступа
+        const hasAccess = await checkPermission()
+        if (!hasAccess) {
+            router.push('/403')
+            return
+        }
+
+        // Загрузка данных задачи
+        const taskId = route.params.taskId
+
+        if (history.state?.id) {
+            task.value = history.state
+        } else {
             const response = await fetch(`https://127.0.0.1:8000/tasks/base/${taskId}`)
-            if (!response.ok) {
-                throw new Error("Ошибка загрузки данных")
-            }
+            if (!response.ok) throw new Error("Ошибка загрузки данных")
             const data = await response.json()
+            
             task.value = {
                 id: data.id,
                 type: data.type,
                 body: data.body,
                 timeLimit: data.time_limit
             }
-        } catch (error) {
-            console.error("Ошибка при загрузке задачи:", error)
-            router.push('/')
         }
+    } catch (error) {
+        console.error("Ошибка:", error)
+        router.push('/403')
     }
 })
 </script>
