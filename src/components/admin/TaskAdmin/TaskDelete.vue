@@ -1,105 +1,98 @@
 <template>
-    <div class="task-section">
-      <div class="card task-card">
-        <div class="card-body">
-          <h3 class="card-title mb-4">
-            <i class="bi bi-trash me-2"></i>Удалить задачу
-          </h3>
-  
-          <!-- Форма удаления -->
-          <div class="input-group">
-            <input
-              v-model.number="taskId"
-              type="number"
-              class="form-control"
-              placeholder="Введите ID задачи"
-            />
-            <button class="btn btn-danger" @click="confirmDelete" :disabled="!taskId">
-              Удалить
-            </button>
-          </div>
+  <div class="task-delete">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="card-title mb-4">
+          <i class="bi bi-trash me-2"></i> Удалить задачу
+        </h3>
+
+        <div class="input-group mb-3">
+          <input
+            v-model.number="taskId"
+            type="number"
+            class="form-control"
+            placeholder="Введите ID задачи"
+          />
+          <button
+            class="btn btn-danger"
+            @click="confirmDelete"
+            :disabled="!taskId"
+          >
+            Удалить
+          </button>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import { useToast } from 'vue-toast-notification'
-  import 'vue-toast-notification/dist/theme-sugar.css'
-  
-  const $toast = useToast()
-  const taskId = ref(null)
-  
-  const confirmDelete = async () => {
-    // Логика удаления задачи
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useToast } from 'vue-toast-notification'
+import 'vue-toast-notification/dist/theme-sugar.css'
+import axios from 'axios'
+
+const $toast = useToast()
+const taskId = ref(null)
+
+const confirmDelete = async () => {
+  if (!taskId.value) {
+    $toast.error('Пожалуйста, введите корректный ID задачи.')
+    return
   }
-  </script>
+
+  try {
+    const response = await axios.delete(`https://127.0.0.1:8000/tasks/${taskId.value}/`)
+    
+    if (response.status === 200) {
+      $toast.success(`Задача с ID ${taskId.value} поставлена в очередь на удаление!`)
+      taskId.value = null // Сбросить поле ввода
+    }
+  } catch (error) {
+    console.error('Ошибка при удалении задачи:', error)
+    
+    if (error.response) {
+      if (error.response.status === 404) {
+        $toast.error(`Задача с ID ${taskId.value} не найдена.`)
+      } else {
+        $toast.error('Ошибка на сервере. Попробуйте позже.')
+      }
+    } else {
+      $toast.error('Не удалось подключиться к серверу.')
+    }
+  }
+}
+</script>
 
 <style scoped>
-  .task-card {
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: none;
-  }
-  
-  .markdown-editor {
-    min-height: 300px;
-    resize: vertical;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 0.8rem;
-  }
-  
-  .preview-wrapper {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 1rem;
-    height: 100%;
-    min-height: 318px;
-    background: #f8f9fa;
-  }
-  
-  .resizable {
-    resize: vertical;
-    min-height: 100px;
-  }
-  
-  .form-group {
-    margin-bottom: 1rem;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #495057;
-  }
-  
-  .form-control-sm {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-  }
-  
-  .btn-primary {
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-  }
-  
-  .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  @media (max-width: 768px) {
-    .markdown-editor {
-      min-height: 200px;
-    }
-  
-    .preview-wrapper {
-      min-height: 200px;
-      margin-top: 1rem;
-    }
-  }
-  </style>
+.task-delete {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  color: #dc3545;
+}
+
+.input-group input {
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.btn-danger {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+</style>
