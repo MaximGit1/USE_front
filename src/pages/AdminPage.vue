@@ -26,9 +26,9 @@
   <script setup>
   import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
-  import Analytics from '../components/Analytics.vue'
-  import TaskAdmin from '../components/TaskAdmin.vue'
-  import UserAdmin from '../components/UserAdmin.vue'
+  import Analytics from '../components/admin/Analytics.vue'
+  import TaskAdmin from '../components/admin/TaskAdmin.vue'
+  import UserAdmin from '../components/admin/UserAdmin.vue'
   
   const router = useRouter()
   const activeTab = ref('analytics')
